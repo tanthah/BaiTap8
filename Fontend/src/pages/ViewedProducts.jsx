@@ -1,9 +1,9 @@
-// Fontend/src/pages/ViewedProducts.jsx
+// Fontend/src/pages/ViewedProducts.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Badge } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const ViewedProducts = () => {
   const navigate = useNavigate();
@@ -23,7 +23,8 @@ const ViewedProducts = () => {
 
   const fetchViewedProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/viewed-products?limit=20');
+      // FIXED: Use axiosInstance with auto token
+      const response = await axiosInstance.get('/viewed-products?limit=20');
       setProducts(response.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải lịch sử xem');
@@ -35,7 +36,8 @@ const ViewedProducts = () => {
   const handleClear = async () => {
     if (window.confirm('Bạn có chắc muốn xóa toàn bộ lịch sử xem?')) {
       try {
-        await axios.delete('http://localhost:5000/api/viewed-products');
+        // FIXED: Use axiosInstance
+        await axiosInstance.delete('/viewed-products');
         setProducts([]);
       } catch (err) {
         alert('Lỗi xóa lịch sử xem');
@@ -45,7 +47,8 @@ const ViewedProducts = () => {
 
   const handleRemove = async (productId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/viewed-products/${productId}`);
+      // FIXED: Use axiosInstance
+      await axiosInstance.delete(`/viewed-products/${productId}`);
       setProducts(products.filter(item => item.product._id !== productId));
     } catch (err) {
       alert('Lỗi xóa sản phẩm');

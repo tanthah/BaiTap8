@@ -1,8 +1,8 @@
-
+// Fontend/src/pages/Categories.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -15,7 +15,8 @@ const Categories = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/categories');
+      // FIXED: Use axiosInstance
+      const response = await axiosInstance.get('/categories');
       setCategories(response.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải danh mục');

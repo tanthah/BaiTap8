@@ -1,10 +1,10 @@
-// Fontend/src/components/Navbar.jsx - CẬP NHẬT
+// Fontend/src/components/Navbar.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchWishlist } from '../redux/wishlistSlice';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -22,7 +22,8 @@ const NavigationBar = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/categories');
+      // FIXED: Use axiosInstance (categories is public so no token needed)
+      const response = await axiosInstance.get('/categories');
       setCategories(response.data.data.slice(0, 5));
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -33,6 +34,7 @@ const NavigationBar = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
+    window.location.reload(); // Reload to clear state
   };
 
   return (

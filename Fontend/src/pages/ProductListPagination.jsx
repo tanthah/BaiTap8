@@ -1,8 +1,8 @@
-
+// Fontend/src/pages/ProductListPagination.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Badge, Spinner, Alert, Form, Pagination } from 'react-bootstrap';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const ProductListPagination = () => {
   const { categorySlug } = useParams();
@@ -40,16 +40,12 @@ const ProductListPagination = () => {
       
       let response;
       if (categorySlug) {
-        response = await axios.get(
-          `http://localhost:5000/api/products/category/${categorySlug}`,
-          { params }
-        );
+        // FIXED: Use axiosInstance
+        response = await axiosInstance.get(`/products/category/${categorySlug}`, { params });
         setCategory(response.data.category);
       } else {
-        response = await axios.get(
-          'http://localhost:5000/api/products',
-          { params }
-        );
+        // FIXED: Use axiosInstance
+        response = await axiosInstance.get('/products', { params });
       }
       
       setProducts(response.data.data);
@@ -86,7 +82,6 @@ const ProductListPagination = () => {
     const { page, pages } = pagination;
     const maxVisible = 5;
     
-    // First page
     items.push(
       <Pagination.First 
         key="first" 
@@ -95,7 +90,6 @@ const ProductListPagination = () => {
       />
     );
     
-    // Previous
     items.push(
       <Pagination.Prev 
         key="prev" 
@@ -104,7 +98,6 @@ const ProductListPagination = () => {
       />
     );
     
-    // Page numbers
     let startPage = Math.max(1, page - Math.floor(maxVisible / 2));
     let endPage = Math.min(pages, startPage + maxVisible - 1);
     
@@ -132,7 +125,6 @@ const ProductListPagination = () => {
       items.push(<Pagination.Ellipsis key="ellipsis2" disabled />);
     }
     
-    // Next
     items.push(
       <Pagination.Next 
         key="next" 
@@ -141,7 +133,6 @@ const ProductListPagination = () => {
       />
     );
     
-    // Last page
     items.push(
       <Pagination.Last 
         key="last" 
@@ -155,7 +146,6 @@ const ProductListPagination = () => {
 
   return (
     <Container className="py-4">
-      {/* Header */}
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
@@ -191,7 +181,6 @@ const ProductListPagination = () => {
         </div>
       ) : (
         <>
-          {/* Products Grid */}
           <Row>
             {products.map((product) => (
               <Col key={product._id} xs={6} md={4} lg={3} className="mb-4">
@@ -286,14 +275,12 @@ const ProductListPagination = () => {
             ))}
           </Row>
 
-          {/* Pagination */}
           {pagination.pages > 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination>{renderPaginationItems()}</Pagination>
             </div>
           )}
 
-          {/* No Products */}
           {products.length === 0 && (
             <Alert variant="info" className="text-center">
               Không tìm thấy sản phẩm nào

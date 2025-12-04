@@ -1,7 +1,8 @@
+// Fontend/src/pages/ProductList.jsx - FIXED
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col, Card, Badge, Spinner, Alert, Form } from 'react-bootstrap';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const ProductList = () => {
   const { categorySlug } = useParams();
@@ -26,7 +27,6 @@ const ProductList = () => {
     
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
-        console.log('Loading more products...');
         setPage(prevPage => prevPage + 1);
       }
     });
@@ -37,8 +37,6 @@ const ProductList = () => {
   // Fetch products function
   const fetchProducts = async (pageNum, isNewSearch = false) => {
     try {
-      console.log('Fetching products:', { pageNum, categorySlug, currentSort, isNewSearch });
-      
       setLoading(true);
       setError('');
       
@@ -49,19 +47,14 @@ const ProductList = () => {
       };
       
       let response;
-      let url;
       
       if (categorySlug) {
-        url = `http://localhost:5000/api/products/category/${categorySlug}`;
-        console.log('Fetching by category:', url);
+        // FIXED: Use axiosInstance
+        response = await axiosInstance.get(`/products/category/${categorySlug}`, { params });
       } else {
-        url = 'http://localhost:5000/api/products';
-        console.log('Fetching all products:', url);
+        // FIXED: Use axiosInstance
+        response = await axiosInstance.get('/products', { params });
       }
-      
-      response = await axios.get(url, { params });
-      
-      console.log('Response:', response.data);
       
       if (categorySlug && response.data.category) {
         setCategory(response.data.category);
@@ -70,18 +63,10 @@ const ProductList = () => {
       const newProducts = response.data.data || [];
       const pagination = response.data.pagination;
       
-      console.log('New products:', newProducts.length);
-      console.log('Pagination:', pagination);
-      
       if (isNewSearch) {
         setProducts(newProducts);
-        console.log('Reset products with new data');
       } else {
-        setProducts(prev => {
-          const combined = [...prev, ...newProducts];
-          console.log('Added products, total:', combined.length);
-          return combined;
-        });
+        setProducts(prev => [...prev, ...newProducts]);
       }
       
       setHasMore(pagination?.hasMore || false);
@@ -97,7 +82,6 @@ const ProductList = () => {
 
   // Effect khi thay đổi category hoặc sort
   useEffect(() => {
-    console.log('Category or sort changed, resetting...');
     setProducts([]);
     setPage(1);
     setHasMore(true);
@@ -108,13 +92,11 @@ const ProductList = () => {
   // Effect khi thay đổi page (lazy loading)
   useEffect(() => {
     if (page > 1) {
-      console.log('Loading page:', page);
       fetchProducts(page, false);
     }
   }, [page]);
 
   const handleSortChange = (e) => {
-    console.log('Sort changed to:', e.target.value);
     setSearchParams({ sort: e.target.value });
   };
 
