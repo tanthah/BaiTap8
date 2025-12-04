@@ -1,9 +1,9 @@
-// Fontend/src/pages/ProductDetail.jsx - ENHANCED
+// Fontend/src/pages/ProductDetail.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Badge, Button, Spinner, Alert, Breadcrumb, Tabs, Tab } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 import { addToWishlist, removeFromWishlist } from '../redux/wishlistSlice';
 import ReviewSection from '../components/ReviewSection';
 import SimilarProducts from '../components/SimilarProducts';
@@ -40,7 +40,8 @@ const ProductDetail = () => {
 
   const fetchProduct = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+      // FIXED: Use axiosInstance without base URL
+      const response = await axiosInstance.get(`/products/${id}`);
       setProduct(response.data.data);
       setSelectedImage(response.data.data.mainImage);
     } catch (err) {
@@ -52,9 +53,11 @@ const ProductDetail = () => {
 
   const recordView = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/viewed-products/${id}`);
+      // FIXED: Use axiosInstance with token
+      await axiosInstance.post(`/viewed-products/${id}`);
     } catch (err) {
       console.error('Error recording view:', err);
+      // Don't show error to user - this is a background operation
     }
   };
 

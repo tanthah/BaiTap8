@@ -1,8 +1,8 @@
-// Fontend/src/components/SimilarProducts.jsx
+// Fontend/src/components/SimilarProducts.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Badge, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const SimilarProducts = ({ productId }) => {
   const [products, setProducts] = useState([]);
@@ -15,11 +15,12 @@ const SimilarProducts = ({ productId }) => {
 
   const fetchSimilarProducts = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/products/${productId}/similar?limit=8`
-      );
+      // FIXED: Use axiosInstance without base URL
+      const response = await axiosInstance.get(`/products/${productId}/similar?limit=8`);
       setProducts(response.data.data);
+      setError(''); // Clear any previous errors
     } catch (err) {
+      console.error('Error fetching similar products:', err);
       setError('Không thể tải sản phẩm tương tự');
     } finally {
       setLoading(false);

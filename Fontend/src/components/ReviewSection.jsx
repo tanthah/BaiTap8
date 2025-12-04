@@ -1,8 +1,8 @@
-// Fontend/src/components/ReviewSection.jsx
+// Fontend/src/components/ReviewSection.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Form, Alert, Spinner, Row, Col, ProgressBar, Badge } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
+import axiosInstance from '../axois/api'; // FIXED: Use axiosInstance
 
 const ReviewSection = ({ productId }) => {
   const { user, token } = useSelector(state => state.auth);
@@ -25,10 +25,13 @@ const ReviewSection = ({ productId }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/reviews/${productId}`);
+      // FIXED: Use axiosInstance without base URL
+      const response = await axiosInstance.get(`/reviews/${productId}`);
       setReviews(response.data.data);
       setStats(response.data.stats);
+      setError(''); // Clear any previous errors
     } catch (err) {
+      console.error('Error fetching reviews:', err);
       setError('Không thể tải đánh giá');
     } finally {
       setLoading(false);
@@ -48,10 +51,8 @@ const ReviewSection = ({ productId }) => {
     setSuccess('');
 
     try {
-      await axios.post(
-        `http://localhost:5000/api/reviews/${productId}`,
-        formData
-      );
+      // FIXED: Use axiosInstance with token
+      await axiosInstance.post(`/reviews/${productId}`, formData);
       
       setSuccess('Đã gửi đánh giá thành công!');
       setFormData({ rating: 5, comment: '' });
@@ -70,7 +71,8 @@ const ReviewSection = ({ productId }) => {
     }
 
     try {
-      await axios.post(`http://localhost:5000/api/reviews/${reviewId}/like`);
+      // FIXED: Use axiosInstance with token
+      await axiosInstance.post(`/reviews/${reviewId}/like`);
       fetchReviews();
     } catch (err) {
       console.error('Error liking review:', err);

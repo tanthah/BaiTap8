@@ -1,3 +1,4 @@
+// Fontend/src/axois/api.js
 import axios from 'axios';
 
 const axiosInstance = axios.create({
@@ -7,7 +8,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor để thêm token vào header
+// Request interceptor để thêm token vào mọi request
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -21,7 +22,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor để xử lý lỗi chung
+// Response interceptor để xử lý lỗi
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

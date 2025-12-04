@@ -1,6 +1,7 @@
 // Backend/src/controllers/reviewController.js
 const Review = require('../models/Review');
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 
 /**
  * @desc   Lấy reviews của sản phẩm
@@ -22,9 +23,17 @@ exports.getProductReviews = async (req, res) => {
 
     const total = await Review.countDocuments({ product: productId });
 
-    // Tính trung bình rating
+    // Tính trung bình rating - FIX: Sử dụng product._id thay vì mongoose.Types.ObjectId()
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy sản phẩm',
+      });
+    }
+
     const stats = await Review.aggregate([
-      { $match: { product: mongoose.Types.ObjectId(productId) } },
+      { $match: { product: product._id } },
       {
         $group: {
           _id: null,
@@ -65,6 +74,7 @@ exports.getProductReviews = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('Error in getProductReviews:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -125,6 +135,7 @@ exports.createReview = async (req, res) => {
       data: populatedReview,
     });
   } catch (error) {
+    console.error('Error in createReview:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -178,6 +189,7 @@ exports.updateReview = async (req, res) => {
       data: populatedReview,
     });
   } catch (error) {
+    console.error('Error in updateReview:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -222,6 +234,7 @@ exports.deleteReview = async (req, res) => {
       message: 'Đã xóa đánh giá',
     });
   } catch (error) {
+    console.error('Error in deleteReview:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -267,6 +280,7 @@ exports.toggleLikeReview = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('Error in toggleLikeReview:', error);
     res.status(500).json({
       success: false,
       message: error.message,
